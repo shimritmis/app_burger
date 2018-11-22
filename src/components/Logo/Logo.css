@@ -1,0 +1,12 @@
+.Logo {
+    background-color: bisque;
+    padding: 8px;
+    height: 75%;
+    box-sizing: border-box;
+    border-radius: 4px; 
+    border:0.5px solid burlywood;
+}
+
+.Logo img {
+    height: 100%;
+}
