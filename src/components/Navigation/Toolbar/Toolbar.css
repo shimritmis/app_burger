@@ -22,7 +22,7 @@
 .Logo {
     height: 85%;
 }
-@media (max-width:499px) {
+@media (max-width:599px) {
     .DesktopOnly {
         display:none;
     }
