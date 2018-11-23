@@ -23,7 +23,6 @@
     font-weight: bold;
 }
 @media (min-width: 500px) {
-
 .NavigationItem {
     margin: 0;
     box-sizing: border-box;
