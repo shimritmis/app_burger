@@ -4,6 +4,8 @@ import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
+import axios from '../../axios-orders';
+
 
 const INGREDIENT_PRICES = {
     salad: 0.7,
@@ -74,7 +76,25 @@ class BurgerBuilder extends Component {
         this.setState({purchasing: false});
     }
     purchaseContinueHandler = () => {
-        alert('You Continue!');
+        //alert('You Continue!');
+        const order = {
+            ingredients: this.state.ingredients,
+            price: this.state.totalPrice, //this is NOT a setup we would use one a REAL app. in a real app we would recalculate the price on the server.
+            customer: {
+                name: 'Shimrit Misgav',
+                address: {
+                    street: 'teststreet 2',
+                    zipCode: '6178955',
+                    city: 'Tel-Aviv',
+                    country: 'Israel'
+                },
+                email:'test@test.com'
+            },
+            deliveryMethod: 'the fastest'
+        }
+        axios.post('/orders.json', order)
+            .then (response => console.log(response))
+            .catch (error=> console.log(error));
     }
     //purchaseHandler won't work in the regular method's syntax, because of the word 'this', we'll
     ///get an error. to fix this, we'll use the ES6 arrow function syntax
