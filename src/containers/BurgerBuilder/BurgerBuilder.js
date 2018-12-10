@@ -96,7 +96,7 @@ class BurgerBuilder extends Component {
             deliveryMethod: 'the fastest'
         }
 
-        axios.post('/orders.json', order)
+        axios.post('/orders.json', order) //in firebase the end point is any node name of your choise . json. so, in our case: /orders.json
             .then (response => {
                 this.setState ({loading: false, purchasing: false});
             } )
