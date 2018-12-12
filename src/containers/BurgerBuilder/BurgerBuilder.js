@@ -18,16 +18,18 @@ const INGREDIENT_PRICES = {
 
 class BurgerBuilder extends Component {
     state= {
-        ingredients: {
-            salad: 0,
-            bacon: 0,
-            cheese: 0,
-            meat: 0
-        }, 
+        ingredients: null,  
         totalPrice: 4,
         purchasable: false,
         purchasing: false,
         loading: false
+    }
+    
+    componentDidMount () {
+        axios.get('https://burger-app-c78f6.firebaseio.com/ingredients.json')
+        .then (response => {
+            this.setState({ingredients: response.data});
+        });
     }
     updatePurchaseState(ingredients) {
         const sum = Object.keys (ingredients)
@@ -39,7 +41,7 @@ class BurgerBuilder extends Component {
         }, 0);
         this.setState({purchasable: sum > 0});
     }
-
+    
     addIngredientHandler = (type) => {
         const oldCount = this.state.ingredients[type];
         const updatedCount = oldCount + 1;
@@ -53,7 +55,7 @@ class BurgerBuilder extends Component {
         this.setState({totalPrice:newPrice, ingredients:updatedIngredients});
         this.updatePurchaseState(updatedIngredients);
     }
-
+    
     removeIngredientHandler = (type) => {
         const oldCount = this.state.ingredients[type];
         if (oldCount <= 0 ) {
@@ -70,11 +72,11 @@ class BurgerBuilder extends Component {
         this.setState({totalPrice:newPrice, ingredients:updatedIngredients});
         this.updatePurchaseState(updatedIngredients);
     }
-
+    
     purchaseHandler =() => {
         this.setState({purchasing:true});
     }
-
+    
     purchaseCancelHandler =() => {
         this.setState({purchasing: false});
     }
@@ -96,15 +98,15 @@ class BurgerBuilder extends Component {
             },
             deliveryMethod: 'the fastest'
         }
-
+        
         axios.post('/orders.json', order) //in firebase the end point is any node name of your choise . json. so, in our case: /orders.json
-            .then (response => {
-                this.setState ({loading: false, purchasing: false});
-            } )
-            .catch (error=> {
-                this.setState ({loading: false, purchasing: false});
-    } );
- }
+        .then (response => {
+            this.setState ({loading: false, purchasing: false});
+        } )
+        .catch (error=> {
+            this.setState ({loading: false, purchasing: false});
+        } );
+    }
     //purchaseHandler won't work in the regular method's syntax, because of the word 'this', we'll
     ///get an error. to fix this, we'll use the ES6 arrow function syntax
     render() {
@@ -114,12 +116,28 @@ class BurgerBuilder extends Component {
         for (let key in disabledInfo) {
             disabledInfo[key] = disabledInfo[key] <=0
         }
+        let orderSummary = null; 
 
-        let orderSummary = <OrderSummary 
-        ingredients={this.state.ingredients}
-        price={this.state.totalPrice}
-        purchaseCancelled ={this.purchaseCancelHandler} 
-        purchaseContinued = {this.purchaseContinueHandler}/>
+        let burger = <Spinner /> 
+        if (this.state.ingredients) {
+            burger = (
+                <Auxiliary>
+                <Burger ingredients={this.state.ingredients} />
+                <BuildControls 
+                ingredientAdded = {this.addIngredientHandler} 
+                ingredientRemoved= {this.removeIngredientHandler}
+                disabled= {disabledInfo}
+                ordered={this.purchaseHandler}
+                purchasable = {this.state.purchasable}
+                price= {this.state.totalPrice}/>
+                </Auxiliary>
+            );
+            orderSummary = <OrderSummary 
+                ingredients={this.state.ingredients}
+                price={this.state.totalPrice}
+                purchaseCancelled ={this.purchaseCancelHandler} 
+                purchaseContinued = {this.purchaseContinueHandler}/>
+        }
 
         if (this.state.loading) {
             orderSummary = <Spinner />
@@ -127,17 +145,10 @@ class BurgerBuilder extends Component {
         //{salad:true, meat:false, ...}
         return (
             <Auxiliary>
-                <Modal show={this.state.purchasing} modalClosed ={this.purchaseCancelHandler}>
-                    {orderSummary}
-                </Modal>
-                <Burger ingredients={this.state.ingredients} />
-                <BuildControls 
-                    ingredientAdded = {this.addIngredientHandler} 
-                    ingredientRemoved= {this.removeIngredientHandler}
-                    disabled= {disabledInfo}
-                    ordered={this.purchaseHandler}
-                    purchasable = {this.state.purchasable}
-                    price= {this.state.totalPrice}/>
+            <Modal show={this.state.purchasing} modalClosed ={this.purchaseCancelHandler}>
+            {orderSummary}
+            </Modal>
+            {burger}
             </Auxiliary>
         );
     }
