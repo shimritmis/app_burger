@@ -1,0 +1,27 @@
+import React, { Component } from 'react'; 
+import CheckoutSummary from '../../components/Order/CheckoutSummary/CheckoutSummary';
+
+
+class Checkout extends Component {
+    state = {
+        ingresidents: {
+            salad:1,
+            meat:1,
+            cheese:1,
+            bacon:1
+        }
+    }
+    render () {
+        return (
+            <div>
+                <CheckoutSummary ingredients= {this.state.ingresidents}/>
+            </div> 
+        );
+    }
+}
+
+export default Checkout;
+
+
+//Checkout form which allows the user click on continue and load the contant form.
+
